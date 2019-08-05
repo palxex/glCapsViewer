@@ -442,6 +442,9 @@ bool glCapsViewer::contextTypeSelection()
 		}
 	}
 #endif
+#ifdef __APPLE__
+	core.availableContextTypes.push_back("OpenGL core context");
+#endif
 	core.contextType = "default";
 	if (core.availableContextTypes.size() > 1) {
 		QStringList items;
@@ -458,8 +461,13 @@ bool glCapsViewer::contextTypeSelection()
 				GLenum err = glewInit();
 				// Get max. supported OpenGL version for versioned core context
 				GLint glVersionMajor, glVersionMinor;
+#ifdef __APPLE__
+				glVersionMajor=3;
+				glVersionMinor=2;
+#else
 				glGetIntegerv(GL_MAJOR_VERSION, &glVersionMajor);
 				glGetIntegerv(GL_MINOR_VERSION, &glVersionMinor);
+#endif
 				// Create core context
 				glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, glVersionMajor);
 				glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, glVersionMinor);
@@ -513,8 +521,13 @@ void glCapsViewer::slotRefreshReport()
 				GLenum err = glewInit();
 				// Get max. supported OpenGL version for versioned core context
 				GLint glVersionMajor, glVersionMinor;
+#ifdef __APPLE__
+				glVersionMajor=3;
+				glVersionMinor=2;
+#else
 				glGetIntegerv(GL_MAJOR_VERSION, &glVersionMajor);
 				glGetIntegerv(GL_MINOR_VERSION, &glVersionMinor);
+#endif
 				// Create core context
 				glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, glVersionMajor);
 				glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, glVersionMinor);
@@ -522,13 +535,19 @@ void glCapsViewer::slotRefreshReport()
 				glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 				core.contextType = "core";
 			}
-
+			else
 			if (item == "OpenGL ES 2.0 context") {
 				glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
 				glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
 				core.contextType = "es2";
 			}
-
+			else {
+				glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
+				glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+				glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_FALSE);
+				glfwWindowHint(GLFW_OPENGL_PROFILE, 0);
+				core.contextType = "default";
+			}
 			glfwDestroyWindow(window);
 		};
 	}

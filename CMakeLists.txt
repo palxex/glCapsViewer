@@ -42,6 +42,10 @@ find_package(X11 REQUIRED)
 link_libraries(${X11_LIBRARIES})
 ENDIF(UNIX)
 
+if (APPLE)
+link_libraries(glew)
+endif (APPLE)
+
 set(GLFW_INCLUDE_DIRS ${GLFW_INCLUDE_DIR})
 set(GLFW_LIBRARIES ${GLFW_LIBRARY})
 
